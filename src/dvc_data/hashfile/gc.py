@@ -26,12 +26,14 @@ def _get_used_hashes(
 
     used_hashes = set()
     for hash_info in used:
-        if hash_info.name != odb.hash_name:
+        if hash_info.name != odb.hash_name or not hash_info.value:
             continue
         used_hashes.add(hash_info.value)
         if hash_info.isdir and not shallow:
             tree = Tree.load(cache_odb, hash_info)
-            used_hashes.update(entry_obj.hash_info.value for _, entry_obj in tree)
+            used_hashes.update(
+                entry.hash_info.value for _, entry in tree if entry.hash_info.value
+            )
     return used_hashes
 
 
